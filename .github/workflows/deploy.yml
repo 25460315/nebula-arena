@@ -24,9 +24,19 @@ jobs:
 
       - name: Pruebas
         working-directory: server
-        run: pip install -r requirements.txt pytest && pytest -q
+        run: pip install -r requirements.txt pytest && python -m pytest -q
+
+      - name: Configurar credenciales AWS (Secrets)
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Configurar credenciales AWS (OIDC)
+        if: ${{ secrets.AWS_ACCESS_KEY_ID == '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::131470772842:role/github-ecr-deployer
@@ -37,5 +47,7 @@ jobs:
 
       - name: Construir y publicar imagen
         run: |
+          aws ecr describe-repositories --repository-names nebula-server --region $AWS_REGION || \
+            aws ecr create-repository --repository-name nebula-server --region $AWS_REGION
           docker build -t $IMG:${{ github.sha }} ./server
           docker push $IMG:${{ github.sha }}
