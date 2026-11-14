@@ -1,0 +1,41 @@
+name: nebula-server-ci
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 131470772842.dkr.ecr.us-east-1.amazonaws.com
+  IMG: 131470772842.dkr.ecr.us-east-1.amazonaws.com/nebula-server
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Pruebas
+        working-directory: server
+        run: pip install -r requirements.txt pytest && pytest -q
+
+      - name: Configurar credenciales AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::131470772842:role/github-ecr-deployer
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login en Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Construir y publicar imagen
+        run: |
+          docker build -t $IMG:${{ github.sha }} ./server
+          docker push $IMG:${{ github.sha }}

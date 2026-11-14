@@ -1,0 +1,61 @@
+{
+  "title": "Nebula Arena — Observabilidad y Autoescalado",
+  "uid": "nebula-arena-u3",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Jugadores conectados (CCU)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(nebula_players_connected)",
+          "legendFormat": "CCU",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Duración del tick p99 (ms)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(nebula_tick_seconds_bucket[1m]))) * 1000",
+          "legendFormat": "Tick p99 (ms)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Servidores por estado (Agones Fleet)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum by (type) (agones_gameservers_count{fleet_name=\"nebula-fleet\"})",
+          "legendFormat": "{{type}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Nodos del clúster EKS",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "count(kube_node_info)",
+          "legendFormat": "Nodos activos",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}
