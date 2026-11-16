@@ -1,6 +1,4 @@
-import base64
-import json
-import boto3
+import base64, json, boto3
 from decimal import Decimal
 
 tabla = boto3.resource("dynamodb").Table("nebula-scores")
@@ -16,15 +14,11 @@ def lambda_handler(event, context):
         tabla.update_item(
             Key={"jugador": d["jugador"]},
             UpdateExpression="ADD puntos :p, partidas :uno",
-            ExpressionAttributeValues={
-                ":p": Decimal(str(d["puntos"])),
-                ":uno": 1,
-            },
+            ExpressionAttributeValues={":p": Decimal(str(d["puntos"])), ":uno": 1},
         )
         return {"statusCode": 201, "body": "ok"}
 
-    # GET: top 10
-    items = tabla.scan(ProjectionExpression="jugador, puntos")["Items"]
+    items = tabla.scan(ProjectionExpression="jugador, puntos")["Items"]  # GET: top 10
     top = sorted(items, key=lambda i: i["puntos"], reverse=True)[:10]
     return {
         "statusCode": 200,

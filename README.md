@@ -1,85 +1,55 @@
-# Nebula Arena — Infraestructura y Despliegue de Videojuegos en la Nube (AWS)
+# Nebula Arena — Infraestructura y Despliegue en AWS (`us-east-1`)
 
-Repositorio completo del **Proyecto Integrador y Prácticas 3.1 a 3.6** de la Unidad 3 (*Infraestructura y despliegue de videojuegos en la nube*), implementado para la ruta de **Amazon Web Services (AWS)**: Amazon EKS, Amazon ECR, Agones, AWS Lambda, Amazon DynamoDB, Amazon S3 + CloudFront, Prometheus/Grafana, Locust y Terraform.
+Repositorio oficial del **Proyecto Integrador y las 6 Prácticas de la Unidad 3** (Variante 100% AWS: Amazon EKS, Agones, Amazon ECR, GitHub Actions OIDC, Prometheus/Grafana, Locust, Amazon S3 + CloudFront, AWS Lambda + DynamoDB y Terraform).
 
-## Estructura del Repositorio
+---
+
+## Estructura Modular del Repositorio
 
 ```text
 nebula-arena/
 ├── .github/workflows/
-│   └── deploy.yml                  # Práctica 3.2: Pipeline CI/CD (pytest -> ECR -> EKS rolling drain)
-├── bot_ia/
-│   ├── train_and_benchmark.py      # Práctica 3.1: Entrenamiento PPO CartPole-v1 (CPU vs GPU) y latencia
-│   └── practica_3_1_bot_nebula.ipynb # Notebook para SageMaker Studio Lab / Google Colab (T4 GPU)
+│   └── deploy.yml                   # Práctica 3.2: Pipeline CI/CD (pytest -> OIDC -> Amazon ECR)
+├── bot/
+│   ├── requirements.txt             # Práctica 3.1: gymnasium + stable-baselines3
+│   └── train_bot.py                 # Práctica 3.1: Entrenamiento PPO (CPU vs GPU) y benchmark inferencia
 ├── server/
-│   ├── server.py                   # Práctica 3.3: Servidor WebSocket 5v5 (20 Hz) + Agones SDK + Prometheus
-│   ├── requirements.txt            # Dependencias del servidor (websockets, prometheus-client)
-│   ├── Dockerfile                  # Imagen de contenedor inmutable (python:3.11-slim, usuario 1000)
-│   └── test_server.py              # Pruebas unitarias ejecutadas en CI con pytest
+│   ├── server.py                    # Práctica 3.3: Servidor 5v5 WebSocket (20 Hz), Prometheus y SDK Agones
+│   ├── requirements.txt             # Práctica 3.3: websockets==12.0, prometheus-client==0.20.0
+│   ├── Dockerfile                   # Práctica 3.3: python:3.11-slim, puertos 7654/9100, USER 1000
+│   └── test_server.py               # Práctica 3.3 / 3.2: Pruebas unitarias pytest
 ├── k8s/
-│   ├── fleet.yaml                  # Flota de Agones (nebula-fleet) con requests/limits y healthcheck
-│   ├── autoscaler.yaml             # FleetAutoscaler (buffer 20%) + HPA de referencia (CPU 60%)
-│   ├── podmonitor.yaml             # PodMonitor para recolectar /metrics (puerto 9100) en Prometheus
-│   ├── allocation.yaml             # GameServerAllocation para pruebas manuales de asignación
-│   └── grafana-dashboard.json      # Tablero de Grafana con los 4 paneles requeridos
+│   ├── fleet.yaml                   # Práctica 3.3: Fleet nebula-fleet (Agones)
+│   ├── allocation.yaml              # Práctica 3.3: GameServerAllocation
+│   ├── autoscaler.yaml              # Práctica 3.4: FleetAutoscaler (buffer 20%) + HPA
+│   └── podmonitor.yaml              # Práctica 3.4: PodMonitor para Prometheus (cada 5s)
 ├── loadtest/
-│   ├── locustfile.py               # Práctica 3.4: Jugador (WebSocket + Allocator) y Espectador (HLS CDN)
-│   ├── generar_stream_aws.sh       # Genera video HLS 360p con FFmpeg y lo publica en S3 + CloudFront
-│   ├── ejecutar_escenarios.sh      # Ejecuta los escenarios rampa, pico y stream en Locust
-│   ├── analizar_resultados.py      # Genera las 3 gráficas PNG y calcula la extrapolación de egress
-│   ├── ccu_vs_p95.png              # Gráfica 1: Curva CCU vs Latencia p95
-│   ├── escalado_timeline.png       # Gráfica 2: Línea de tiempo de GameServers y Nodos EKS
-│   └── errores_y_rebuffering_pico.png # Gráfica 3: Errores en pico 10x y Rebuffering en CDN
+│   ├── locustfile.py                # Práctica 3.4: Jugador (WS 20 Hz + ping RTT) y Espectador (HLS 360p)
+│   ├── analisis.py                  # Práctica 3.4: Curva CCU vs p95 y extrapolación de egress CloudFront
+│   ├── ccu_vs_p95.png               # Práctica 3.4: Gráfica real generada (1,000 CCU)
+│   ├── rampa_stats.csv              # Práctica 3.4: Métricas reales escenario Rampa
+│   ├── pico_stats.csv               # Práctica 3.4: Métricas reales escenario Pico
+│   └── stream_stats.csv             # Práctica 3.4: Métricas reales escenario Streaming HLS
 ├── serverless/
-│   ├── lambda_function.py          # Práctica 3.5: Tabla de líderes en AWS Lambda + DynamoDB (nebula-scores)
-│   └── locust_leaderboard.py       # Prueba de carga 80% GET / 20% POST con 500 usuarios
+│   ├── lambda_function.py           # Práctica 3.5: AWS Lambda (Python 3.12) + DynamoDB nebula-scores
+│   ├── function.zip                 # Práctica 3.5: Paquete desplegable Lambda
+│   └── locust_leaderboard.py        # Práctica 3.5: Prueba de carga 80% GET / 20% POST (500 usuarios)
 ├── infra/
-│   ├── main.tf                     # Práctica 3.6: Proveedores AWS/Helm y backend S3 con bloqueo
-│   ├── variables.tf                # Variables parametrizables por entorno (dev/staging/prod)
-│   ├── red.tf                      # Módulo VPC oficial + Security Group UDP/TCP 7000-8000
-│   ├── eks.tf                      # Módulo EKS oficial (node group c7i.xlarge) + repositorio ECR
-│   ├── agones.tf                   # Instalación automática de Agones vía Helm provider
-│   ├── serverless.tf               # Tabla DynamoDB + Rol IAM + Función Lambda + Function URL
-│   └── outputs.tf                  # Salidas del clúster, registro ECR y URL del leaderboard
+│   ├── main.tf                      # Práctica 3.6: Providers AWS/Helm y backend S3 + DynamoDB Lock
+│   ├── variables.tf                 # Práctica 3.6: Variables de región, proyecto y nodos
+│   ├── red.tf                       # Práctica 3.6: Módulo VPC y Security Group TCP/UDP 7000-8000
+│   ├── eks.tf                       # Práctica 3.6: Módulo EKS (nebula-default, c7i.xlarge) y ECR
+│   ├── agones.tf                    # Práctica 3.6: Release Helm de Agones
+│   ├── serverless.tf                # Práctica 3.6: Tabla DynamoDB y Lambda Function URL como código
+│   └── outputs.tf                   # Práctica 3.6: Outputs de clúster y registro ECR
 └── docs/
-    └── REPORTE_TECNICO_Y_ENTREGABLES.md # Reporte técnico completo (máx. 6 págs) y entregables 3.1–3.6
-```
-
-## Guía Rápida de Ejecución
-
-### 1. Ejecutar Pruebas Unitarias y Servidor Local (Prácticas 3.2 y 3.3)
-```bash
-cd server
-pip install -r requirements.txt pytest
-pytest -q
-docker build -t nebula-server:1.0 .
-docker run -p 7654:7654 -p 9100:9100 nebula-server:1.0
-```
-
-### 2. Desplegar toda la Infraestructura en AWS con Terraform (Práctica 3.6)
-```bash
-cd infra
-terraform init
-terraform validate
-terraform plan -out plan.tfplan
-terraform apply plan.tfplan
-```
-
-### 3. Desplegar Flota y Autoescalado en EKS (Prácticas 3.3 y 3.4)
-```bash
-aws eks update-kubeconfig --region us-east-1 --name nebula-default
-kubectl apply -f ../k8s/fleet.yaml -f ../k8s/autoscaler.yaml -f ../k8s/podmonitor.yaml
-kubectl get gameservers
-```
-
-### 4. Generar Gráficas y Análisis de Carga (Práctica 3.4)
-```bash
-cd ../loadtest
-python analizar_resultados.py
-```
-
-### 5. Destruir el Entorno al Terminar la Sesión (Control de Costos)
-```bash
-cd ../infra
-terraform destroy
+    ├── entregable_3_1.md            # Entregable Práctica 3.1 (Cómputo para IA)
+    ├── entregable_3_2.md            # Entregable Práctica 3.2 (CI/CD y Rollback)
+    ├── entregable_3_3.md            # Entregable Práctica 3.3 (Contenedores, EKS y Agones)
+    ├── entregable_3_4.md            # Entregable Práctica 3.4 (Reporte Técnico de Autoescalado y Carga)
+    ├── entregable_3_5.md            # Entregable Práctica 3.5 (Serverless vs EC2 24/7)
+    ├── entregable_3_6.md            # Entregable Práctica 3.6 (Terraform IaC)
+    ├── reporte_final_nebula_arena.md # Proyecto Integrador: Reporte Técnico Final Completo
+    ├── guion_presentacion_10min.md  # Proyecto Integrador: Guion minuto a minuto y Demo en Vivo
+    └── autoevaluacion_unidad3.md    # Respuestas a las 8 preguntas de Autoevaluación
 ```

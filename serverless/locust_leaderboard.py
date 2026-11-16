@@ -1,24 +1,18 @@
-"""
-Práctica 3.5 — Prueba de carga a la tabla de líderes Serverless (AWS Lambda + DynamoDB)
-Ejecuta 80% lecturas (GET) y 20% escrituras (POST) con 500 usuarios concurrentes:
-  locust -f locust_leaderboard.py --host <LAMBDA_FUNCTION_URL> -u 500 -r 50 -t 3m --headless --csv leaderboard
-"""
-
 import random
 from locust import HttpUser, task, between
 
 
-class JugadorLeaderboard(HttpUser):
-    wait_time = between(0.2, 0.8)
+class LeaderboardUser(HttpUser):
+    wait_time = between(0.1, 0.5)
 
-    @task(4)  # 80% lecturas del top 10
+    @task(4)  # 80% lecturas (GET top 10)
     def consultar_top(self):
-        self.client.get("/", name="GET /top10")
+        self.client.get("/", name="GET /top")
 
-    @task(1)  # 20% escrituras de puntajes al terminar partida
+    @task(1)  # 20% escrituras (POST score)
     def registrar_puntaje(self):
-        jugador = f"player_{random.randint(1, 5000)}"
-        puntos = random.randint(100, 2500)
+        jugador = f"jugador_{random.randint(1, 500)}"
+        puntos = random.randint(50, 1500)
         self.client.post(
             "/",
             json={"jugador": jugador, "puntos": puntos},

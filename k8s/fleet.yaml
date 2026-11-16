@@ -7,24 +7,18 @@ spec:
   template:
     spec:
       ports:
-      - name: game
-        containerPort: 7654
-        protocol: TCP
-      health:
-        initialDelaySeconds: 10
-        periodSeconds: 5
+        - name: game
+          containerPort: 7654
+          protocol: TCP          # WebSocket viaja sobre TCP
+      health: { initialDelaySeconds: 10, periodSeconds: 5 }
       template:
         spec:
           containers:
-          - name: nebula
-            image: 131470772842.dkr.ecr.us-east-1.amazonaws.com/nebula-server:1.0
-            ports:
-            - name: metrics
-              containerPort: 9100
-            resources:
-              requests:
-                cpu: "250m"
-                memory: "256Mi"
-              limits:
-                cpu: "500m"
-                memory: "512Mi"
+            - name: nebula
+              image: 131470772842.dkr.ecr.us-east-1.amazonaws.com/nebula-server:e8aa9065274be22e2abf2a6ed13fd25714d0a141
+              ports:
+                - name: metrics  # lo leerá Prometheus en la práctica 3.4
+                  containerPort: 9100
+              resources:
+                requests: { cpu: "250m", memory: "256Mi" }
+                limits:   { cpu: "500m", memory: "512Mi" }

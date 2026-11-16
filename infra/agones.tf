@@ -16,11 +16,7 @@ resource "helm_release" "agones" {
   chart            = "agones"
   namespace        = "agones-system"
   create_namespace = true
-
-  set {
-    name  = "agones.metrics.serviceMonitor.enabled"
-    value = "true"
-  }
-
-  depends_on = [module.eks]
+  wait             = false
+  replace          = true
+  depends_on       = [module.eks]
 }

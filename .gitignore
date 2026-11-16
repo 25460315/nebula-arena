@@ -3,19 +3,14 @@
 *.tfstate
 *.tfstate.*
 *.tfplan
-infra/lambda_function.zip
 
-# Credenciales y certificados de laboratorio (Prácticas 3.2 y 3.4)
-key.json
-*.crt
+# Llaves y certificados locales
+*.pem
 *.key
+*.crt
 
-# Python / Pytest
+# Segmentos de video HLS pesados y entornos virtuales
+loadtest/hls/
+venv/
 __pycache__/
-*.py[cod]
-.pytest_cache/
-.venv/
-
-# Video HLS generado localmente (Práctica 3.4)
-*.ts
-*.m3u8
+*.pyc

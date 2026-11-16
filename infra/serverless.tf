@@ -1,4 +1,9 @@
 # Tabla de líderes Serverless (Práctica 3.5 integrada en IaC)
+import {
+  to = aws_dynamodb_table.nebula_scores
+  id = "nebula-scores"
+}
+
 resource "aws_dynamodb_table" "nebula_scores" {
   name         = "nebula-scores"
   billing_mode = "PAY_PER_REQUEST"

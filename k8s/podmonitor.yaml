@@ -5,8 +5,7 @@ metadata:
   namespace: default
 spec:
   selector:
-    matchLabels:
-      agones.dev/role: gameserver
+    matchLabels: { agones.dev/role: gameserver }
   podMetricsEndpoints:
     - port: metrics
       interval: 5s

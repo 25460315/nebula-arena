@@ -1,0 +1,11 @@
+Count,Message,Traceback,Nodes
+1026,429 Client Error: Too Many Requests for url: https://a71c21b2774ff4240bf13bf6e8ca8d44-259804529.us-east-1.elb.amazonaws.com/gameserverallocation,"  File ""/home/ubuntu/venv/lib/python3.12/site-packages/locust/user/users.py"", line 166, in run
+    self.on_start()
+  File ""/home/ubuntu/locustfile.py"", line 52, in on_start
+    self.ws = create_connection(f""ws://{self.pedir_servidor()}"", timeout=5)
+                                        ^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/locustfile.py"", line 39, in pedir_servidor
+    r.raise_for_status()
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/models.py"", line 1167, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+","ip-192-168-41-172_7a6a8bfd8feb4831a811f222029ceafb, ip-192-168-41-172_cdf9b8197b3f46f090489689629c806c, ip-192-168-41-172_7e5007ae89fa4840b80131b099131cb0, ip-192-168-41-172_c08bd88af8ce4032badb19d7f5e87b88, ip-192-168-41-172_ffad36cfe2454baab22a1f0b3ba96e61, ip-192-168-41-172_5ab1365491e2461789de3bd5c844ce9e, ip-192-168-41-172_b95110cfe349411bb6677c104dacc9f8, ip-192-168-41-172_f5e77fb2596e4747b49ded1c1bbfe293"

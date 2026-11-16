@@ -36,5 +36,7 @@ jobs:
 
       - name: Construir y publicar imagen
         run: |
+          aws ecr describe-repositories --repository-names nebula-server --region $AWS_REGION || \
+            aws ecr create-repository --repository-name nebula-server --region $AWS_REGION
           docker build -t $IMG:${{ github.sha }} ./server
           docker push $IMG:${{ github.sha }}

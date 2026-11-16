@@ -1,0 +1,34 @@
+Count,Message,Traceback,Nodes
+4505,429 Client Error: Too Many Requests for url: https://a71c21b2774ff4240bf13bf6e8ca8d44-259804529.us-east-1.elb.amazonaws.com/gameserverallocation,"  File ""/home/ubuntu/venv/lib/python3.12/site-packages/locust/user/users.py"", line 166, in run
+    self.on_start()
+  File ""/home/ubuntu/locustfile.py"", line 52, in on_start
+    self.ws = create_connection(f""ws://{self.pedir_servidor()}"", timeout=5)
+                                        ^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/locustfile.py"", line 39, in pedir_servidor
+    r.raise_for_status()
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/models.py"", line 1167, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+","ip-192-168-41-172_feb7b2a7d890475495b8e2e5c103e87c, ip-192-168-41-172_06b48505acd4408db482760943d1a514, ip-192-168-41-172_ee166da6d17a4170b4128f97169e7a85, ip-192-168-41-172_739f6dd2b7a24f3686ddce9fc7134dda, ip-192-168-41-172_f2b7fc01ae6a4ed8a4d15c32cb8af5f8, ip-192-168-41-172_073ad441612d437d9aef20582977fe8e, ip-192-168-41-172_51e05c343c464f3a999ef809fcbca61d, ip-192-168-41-172_2389a3d5d4fd4e8689c329f5e7a38239"
+1,"('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))","  File ""/home/ubuntu/venv/lib/python3.12/site-packages/locust/user/users.py"", line 166, in run
+    self.on_start()
+  File ""/home/ubuntu/locustfile.py"", line 52, in on_start
+    self.ws = create_connection(f""ws://{self.pedir_servidor()}"", timeout=5)
+                                        ^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/locustfile.py"", line 38, in pedir_servidor
+    r = requests.post(ALLOCATOR, json=PEDIDO, timeout=10, **CERTS)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/api.py"", line 134, in post
+    return request(""post"", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/api.py"", line 71, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/sessions.py"", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/sessions.py"", line 784, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""/home/ubuntu/venv/lib/python3.12/site-packages/requests/adapters.py"", line 711, in send
+    raise ConnectionError(err, request=request)
+",ip-192-168-41-172_f2b7fc01ae6a4ed8a4d15c32cb8af5f8

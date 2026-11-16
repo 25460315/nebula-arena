@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+GET,segmento,HTTPError('403 Client Error: Forbidden for url: segmento'),5,2026-11-15T01:23:10Z,2026-11-15T01:23:36Z
